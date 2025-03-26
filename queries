@@ -1,0 +1,52 @@
+--Top ten counties with lowest crime rate
+SELECT
+    s.County,
+    SUM(c.Total_Index_Crimes) AS TotalCrimes
+FROM
+    `florida-crime-data.Florida_crime_21.stations` AS s
+INNER JOIN
+    `florida-crime-data.Florida_crime_21.crimes` AS c ON s.Primary_Key = c.Primary_Key
+GROUP BY
+    s.County
+ORDER BY
+    TotalCrimes ASC  -- Order in ascending order for lowest
+LIMIT 10;
+
+--Population vs Crime rate
+SELECT
+    s.Population,
+    SAFE_CAST(c.Crime_Rate_per_100K_Population AS FLOAT64) AS Crime_Rate_per_100K_Population
+  FROM
+    `Florida_crime_21.stations` AS s
+    INNER JOIN `Florida_crime_21.crimes` AS c ON s.Primary_Key = c.Primary_Key
+  WHERE s.Year = 2021
+  AND SAFE_CAST(c.Crime_Rate_per_100K_Population AS FLOAT64) > 0.0
+    AND c.Crime_Rate_per_100K_Population IS NOT NULL  -- Exclude NULLs
+  ORDER BY Crime_Rate_per_100K_Population DESC  -- Order for "best" (highest or lowest)
+LIMIT 10;  -- Limit to the top 10
+
+--Top ten counties with highest crime per capita
+SELECT
+    s.County,
+    SAFE_CAST(c.Crime_Rate_per_100K_Population AS FLOAT64) AS Crime_Rate_per_100K_Population
+  FROM
+    `Florida_crime_21.stations` AS s
+    INNER JOIN `Florida_crime_21.crimes` AS c ON s.Primary_Key = c.Primary_Key
+  WHERE s.Year = 2021
+   AND c.Crime_Rate_per_100K_Population IS NOT NULL  -- Filter out NULL values
+  ORDER BY 2 DESC  -- Order by crime rate DESC for "best" (lowest)
+LIMIT 10;
+
+--counties with highest total crimes
+SELECT
+    s.County,
+    SUM(c.Total_Index_Crimes) AS TotalCrimes
+FROM
+    `florida-crime-data.Florida_crime_21.stations` AS s
+INNER JOIN
+    `florida-crime-data.Florida_crime_21.crimes` AS c ON s.Primary_Key = c.Primary_Key
+GROUP BY
+    s.County
+ORDER BY
+    TotalCrimes DESC
+LIMIT 10;
